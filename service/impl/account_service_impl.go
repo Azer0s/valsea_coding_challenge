@@ -29,15 +29,26 @@ func (a *AccountServiceImpl) CreateAccount(request transactional.CreateUserReque
 	}
 
 	userEntity := entity.NewUserEntity(request.Owner, request.InitialBalance)
+
+	a.log.Debug("Creating account", zap.String("owner", request.Owner), zap.String("initialBalance", request.InitialBalance.String()))
 	err := a.userRepository.Save(userEntity)
 	if err != nil {
 		return nil, err
 	}
 
-	//TODO: create transaction history
+	a.log.Debug("Creating transaction history for user", zap.String("userId", userEntity.Id.String()))
+	err = a.transactionRepository.CreateHistory(userEntity.Id.String())
+	if err != nil {
+		//rollback user creation
+		err = a.userRepository.Delete(userEntity)
+		if err != nil {
+			a.log.Error("Failed to rollback user creation", zap.Error(err))
+		}
+
+		return nil, err
+	}
 
 	a.log.Debug("Created account", zap.String("id", userEntity.Id.String()))
-
 	return a.userMapperService.ToUserDto(userEntity)
 }
 

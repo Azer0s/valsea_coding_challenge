@@ -53,8 +53,22 @@ func (i *InMemoryUserRepository) FindAll() []*entity.UserEntity {
 }
 
 func (i *InMemoryUserRepository) Save(user *entity.UserEntity) error {
+	if _, ok := i.users.Load(user.Id.String()); ok {
+		return errors.New("user already exists")
+	}
+
 	i.users.Store(user.Id.String(), user)
 	i.usersMu.Store(user.Id.String(), &sync.RWMutex{})
+	return nil
+}
+
+func (i *InMemoryUserRepository) Delete(user *entity.UserEntity) error {
+	if _, ok := i.users.Load(user.Id.String()); !ok {
+		return errors.New("user not found")
+	}
+
+	i.users.Delete(user.Id.String())
+	i.usersMu.Delete(user.Id.String())
 	return nil
 }
 

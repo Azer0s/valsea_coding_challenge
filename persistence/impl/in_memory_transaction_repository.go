@@ -2,16 +2,25 @@ package impl
 
 import (
 	"errors"
+	"go.uber.org/zap"
 	"valsea_coding_challenge/domain/entity"
 	"valsea_coding_challenge/util"
 )
 
 type InMemoryTransactionRepository struct {
+	log          *zap.Logger
 	transactions *util.TypedSyncMap[string, *util.AtomicLinkedList[*entity.TransactionEntity]]
 }
 
-func (i *InMemoryTransactionRepository) CreateHistory(userId string) {
+func (i *InMemoryTransactionRepository) CreateHistory(userId string) error {
+	if _, ok := i.transactions.Load(userId); ok {
+		return errors.New("transaction history already exists for user")
+	}
+
 	i.transactions.Store(userId, util.NewAtomicLinkedList[*entity.TransactionEntity]())
+	i.log.Debug("Creating transaction history for user", zap.String("userId", userId))
+
+	return nil
 }
 
 func (i *InMemoryTransactionRepository) GetAllTransactionsForUser(userId string) ([]*entity.TransactionEntity, error) {
@@ -33,7 +42,7 @@ func (i *InMemoryTransactionRepository) SaveForUser(userId string, transaction *
 	return nil
 }
 
-func NewInMemoryTransactionRepository() *InMemoryTransactionRepository {
+func NewInMemoryTransactionRepository(log *zap.Logger) *InMemoryTransactionRepository {
 	return &InMemoryTransactionRepository{
 		transactions: util.NewTypedSyncMap[string, *util.AtomicLinkedList[*entity.TransactionEntity]](),
 	}

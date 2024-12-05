@@ -27,6 +27,10 @@ func (t *TypedSyncMap[K, V]) Range(f func(key K, value V) bool) {
 	})
 }
 
+func (t *TypedSyncMap[K, V]) Delete(key K) {
+	t.m.Delete(key)
+}
+
 func (t *TypedSyncMap[K, V]) Load(key K) (value V, ok bool) {
 	v, ok := t.m.Load(key)
 	if !ok {
