@@ -37,4 +37,10 @@ func AccountController(r *gin.Engine, log *zap.Logger, accountService service.Ac
 
 		c.JSON(201, user)
 	})
+
+	//TODO GET /accounts/:id
+	//TODO GET /accounts
+	//TODO POST /accounts/:id/transactions
+	//TODO GET /accounts/:id/transactions
+	//TODO POST /transfer
 }
