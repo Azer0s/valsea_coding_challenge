@@ -54,6 +54,20 @@ func (l *AtomicLinkedList[T]) Contains(value T) bool {
 	return false
 }
 
+func (l *AtomicLinkedList[T]) Find(predicate func(T) bool) *T {
+	l.rw.RLock()
+	defer l.rw.RUnlock()
+
+	current := l.head
+	for current != nil {
+		if predicate(current.value) {
+			return &current.value
+		}
+		current = current.next
+	}
+	return nil
+}
+
 func (l *AtomicLinkedList[T]) Size() uint {
 	l.rw.RLock()
 	defer l.rw.RUnlock()

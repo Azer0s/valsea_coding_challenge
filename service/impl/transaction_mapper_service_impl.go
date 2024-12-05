@@ -8,12 +8,12 @@ import (
 type TransactionMapperServiceImpl struct {
 }
 
-func (t *TransactionMapperServiceImpl) ToTransactionDto(transactionEntity *entity.TransactionEntity) (*dto.TransactionDTO, error) {
+func (t *TransactionMapperServiceImpl) ToTransactionDto(transactionEntity *entity.TransactionEntity) *dto.TransactionDTO {
 	return &dto.TransactionDTO{
 		Id:              transactionEntity.Id.String(),
-		RelatedAccount:  transactionEntity.RelatedAccount.String(),
+		RelatedUserId:   transactionEntity.RelatedUserId.String(),
 		Amount:          transactionEntity.Amount.InexactFloat64(),
 		Timestamp:       transactionEntity.Timestamp.String(),
 		TransactionType: transactionEntity.TransactionType,
-	}, nil
+	}
 }

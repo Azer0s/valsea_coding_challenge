@@ -9,9 +9,9 @@ import (
 	"valsea_coding_challenge/service"
 )
 
-func AccountController(r *gin.Engine, log *zap.Logger, accountService service.AccountService) {
+func AccountController(r *gin.Engine, log *zap.Logger, userService service.UserService) {
 	r.POST("/accounts", func(c *gin.Context) {
-		log.Info("Received request to create account")
+		log.Debug("Received request to create account")
 
 		reqBody, err := io.ReadAll(c.Request.Body)
 		if err != nil {
@@ -28,7 +28,7 @@ func AccountController(r *gin.Engine, log *zap.Logger, accountService service.Ac
 			return
 		}
 
-		user, err := accountService.CreateAccount(req)
+		user, err := userService.CreateUser(req)
 		if err != nil {
 			log.Error("Failed to create account", zap.Error(err))
 			c.JSON(500, gin.H{"error": "Failed to create account"})
@@ -38,9 +38,30 @@ func AccountController(r *gin.Engine, log *zap.Logger, accountService service.Ac
 		c.JSON(201, user)
 	})
 
-	//TODO GET /accounts/:id
-	//TODO GET /accounts
-	//TODO POST /accounts/:id/transactions
-	//TODO GET /accounts/:id/transactions
-	//TODO POST /transfer
+	r.GET("/accounts/:id", func(c *gin.Context) {
+		log.Info("Received request to get account by id")
+
+		id := c.Param("id")
+		user, err := userService.GetUserById(id)
+		if err != nil {
+			log.Error("Failed to get account by id", zap.Error(err))
+			c.JSON(404, gin.H{"error": "Failed to get account by id"})
+			return
+		}
+
+		c.JSON(200, user)
+	})
+
+	r.GET("/accounts", func(c *gin.Context) {
+		log.Info("Received request to get all accounts")
+
+		users, err := userService.GetAllUsers()
+		if err != nil {
+			log.Error("Failed to get all accounts", zap.Error(err))
+			c.JSON(500, gin.H{"error": "Failed to get all accounts"})
+			return
+		}
+
+		c.JSON(200, users)
+	})
 }

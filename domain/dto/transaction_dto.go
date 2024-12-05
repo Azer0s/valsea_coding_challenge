@@ -6,7 +6,7 @@ import (
 
 type TransactionDTO struct {
 	Id              string               `json:"id"`
-	RelatedAccount  string               `json:"account_id"`
+	RelatedUserId   string               `json:"account_id"`
 	Amount          float64              `json:"amount"`
 	Timestamp       string               `json:"timestamp"`
 	TransactionType enum.TransactionType `json:"type"`

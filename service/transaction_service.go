@@ -6,9 +6,9 @@ import (
 )
 
 type TransactionService interface {
-	Transfer(fromAccountID string, toAccountID string, amount decimal.Decimal) error
-	Deposit(accountID string, amount decimal.Decimal) error
-	Withdraw(accountID string, amount decimal.Decimal) error
+	Transfer(fromUserId string, toUserId string, amount decimal.Decimal) ([]dto.TransactionDTO, error)
+	Deposit(userId string, amount decimal.Decimal) (*dto.TransactionDTO, error)
+	Withdraw(userId string, amount decimal.Decimal) (*dto.TransactionDTO, error)
 
 	GetTransactions(accountID string) ([]dto.TransactionDTO, error)
 }

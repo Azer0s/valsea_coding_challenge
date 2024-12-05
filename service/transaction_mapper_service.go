@@ -6,5 +6,5 @@ import (
 )
 
 type TransactionMapperService interface {
-	ToTransactionDto(transactionEntity *entity.TransactionEntity) (*dto.TransactionDTO, error)
+	ToTransactionDto(transactionEntity *entity.TransactionEntity) *dto.TransactionDTO
 }

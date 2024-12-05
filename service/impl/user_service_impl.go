@@ -10,7 +10,7 @@ import (
 	"valsea_coding_challenge/service"
 )
 
-type AccountServiceImpl struct {
+type UserServiceImpl struct {
 	userRepository    persistence.UserRepository
 	userMapperService service.UserMapperService
 
@@ -19,7 +19,9 @@ type AccountServiceImpl struct {
 	log *zap.Logger
 }
 
-func (a *AccountServiceImpl) CreateAccount(request transactional.CreateUserRequest) (*dto.UserDTO, error) {
+func (a *UserServiceImpl) CreateUser(request transactional.CreateUserRequest) (*dto.UserDTO, error) {
+	a.log.Info("Creating account for user", zap.String("owner", request.Owner), zap.String("initialBalance", request.InitialBalance.String()))
+
 	if request.Owner == "" {
 		return nil, errors.New("name of owner is required")
 	}
@@ -30,7 +32,7 @@ func (a *AccountServiceImpl) CreateAccount(request transactional.CreateUserReque
 
 	userEntity := entity.NewUserEntity(request.Owner, request.InitialBalance)
 
-	a.log.Debug("Creating account", zap.String("owner", request.Owner), zap.String("initialBalance", request.InitialBalance.String()))
+	a.log.Debug("Creating user entity", zap.String("owner", userEntity.Name), zap.String("balance", userEntity.Balance.String()))
 	err := a.userRepository.Save(userEntity)
 	if err != nil {
 		return nil, err
@@ -49,33 +51,29 @@ func (a *AccountServiceImpl) CreateAccount(request transactional.CreateUserReque
 	}
 
 	a.log.Debug("Created account", zap.String("id", userEntity.Id.String()))
-	return a.userMapperService.ToUserDto(userEntity)
+	return a.userMapperService.ToUserDto(userEntity), nil
 }
 
-func (a *AccountServiceImpl) GetAccountById(id string) (*dto.UserDTO, error) {
+func (a *UserServiceImpl) GetUserById(id string) (*dto.UserDTO, error) {
 	user, err := a.userRepository.FindById(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return a.userMapperService.ToUserDto(user)
+	return a.userMapperService.ToUserDto(user), nil
 }
 
-func (a *AccountServiceImpl) GetAllAccounts() ([]dto.UserDTO, error) {
+func (a *UserServiceImpl) GetAllUsers() ([]dto.UserDTO, error) {
 	users := a.userRepository.FindAll()
 	userDtos := make([]dto.UserDTO, 0, len(users))
 	for _, user := range users {
-		userDto, err := a.userMapperService.ToUserDto(user)
-		if err != nil {
-			return nil, err
-		}
-		userDtos = append(userDtos, *userDto)
+		userDtos = append(userDtos, *a.userMapperService.ToUserDto(user))
 	}
 	return userDtos, nil
 }
 
-func NewAccountServiceImpl(userRepository persistence.UserRepository, transactionRepository persistence.TransactionRepository, userMapperService service.UserMapperService, log *zap.Logger) *AccountServiceImpl {
-	return &AccountServiceImpl{
+func NewUserServiceImpl(userRepository persistence.UserRepository, transactionRepository persistence.TransactionRepository, userMapperService service.UserMapperService, log *zap.Logger) *UserServiceImpl {
+	return &UserServiceImpl{
 		userRepository:        userRepository,
 		userMapperService:     userMapperService,
 		transactionRepository: transactionRepository,

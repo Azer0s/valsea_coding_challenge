@@ -8,12 +8,12 @@ import (
 type UserMapperServiceImpl struct {
 }
 
-func (s *UserMapperServiceImpl) ToUserDto(userEntity *entity.UserEntity) (*dto.UserDTO, error) {
+func (s *UserMapperServiceImpl) ToUserDto(userEntity *entity.UserEntity) *dto.UserDTO {
 	return &dto.UserDTO{
 		Id:      userEntity.Id.String(),
 		Name:    userEntity.Name,
 		Balance: userEntity.Balance.InexactFloat64(),
-	}, nil
+	}
 }
 
 func NewUserMapperServiceImpl() *UserMapperServiceImpl {

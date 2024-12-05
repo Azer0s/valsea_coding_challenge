@@ -6,5 +6,5 @@ import (
 )
 
 type UserMapperService interface {
-	ToUserDto(userEntity *entity.UserEntity) (*dto.UserDTO, error)
+	ToUserDto(userEntity *entity.UserEntity) *dto.UserDTO
 }

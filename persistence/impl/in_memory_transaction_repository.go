@@ -42,8 +42,25 @@ func (i *InMemoryTransactionRepository) SaveForUser(userId string, transaction *
 	return nil
 }
 
+func (i *InMemoryTransactionRepository) DeleteTransaction(userId string, transactionId string) error {
+	history, ok := i.transactions.Load(userId)
+	if !ok {
+		return errors.New("user not found")
+	}
+
+	transaction := *history.Find(func(t *entity.TransactionEntity) bool {
+		return t.Id.String() == transactionId
+	})
+	if transaction == nil {
+		return errors.New("transaction not found")
+	}
+
+	return history.Remove(transaction)
+}
+
 func NewInMemoryTransactionRepository(log *zap.Logger) *InMemoryTransactionRepository {
 	return &InMemoryTransactionRepository{
 		transactions: util.NewTypedSyncMap[string, *util.AtomicLinkedList[*entity.TransactionEntity]](),
+		log:          log,
 	}
 }

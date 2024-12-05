@@ -18,8 +18,8 @@ type InMemoryUserRepository struct {
 }
 
 func (i *InMemoryUserRepository) FindById(id string) (*entity.UserEntity, error) {
-	mu, err := i.usersMu.Load(id)
-	if err {
+	mu, ok := i.usersMu.Load(id)
+	if !ok {
 		return nil, errors.New("user not found")
 	}
 

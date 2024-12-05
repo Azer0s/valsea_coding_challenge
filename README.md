@@ -6,12 +6,12 @@ A simple backend for a banking system.
 - [ ] Concurrently support multiple accounts
 - [ ] Support for deposit and withdrawal
 - [ ] Support for transfer between accounts
+- [ ] Testing
 
 ## Non-goals (left out because of time constraints)
 - [ ] Authentication
 - [ ] Authorization
 - [ ] Observability
-- [ ] Testing
 
 ## Usage
 
